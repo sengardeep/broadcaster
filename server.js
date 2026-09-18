@@ -1,6 +1,8 @@
 import { WebSocketServer } from "ws";
+import express from 'express';
 
 const wss = new WebSocketServer({ port: 8080 });
+const app = express();
 
 //Connection Event
 wss.on("connection", (socket, request) => {
@@ -29,5 +31,9 @@ wss.on("connection", (socket, request) => {
         console.log("User disconnected");
     });
 });
+
+app.listen(3000,"0.0.0.0",()=>{
+    console.log('Frontend is listening to 3000');
+})
 
 console.log("Wesocket Server is live on ws://localhost:8080");
