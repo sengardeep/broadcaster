@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Websocket Live Test Rig</title>
+    <style>
+        body { font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif; padding: 20px; background: #121212; color: #fff; }
+        #log {  background-color: #000; padding: 10px; height: 300px; overflow-y: scroll; border: 1px solid #333; color: #2EFF2E;}
+        .status-on { color: #00ff00 }
+        .status-off { color: #ff0000;}
+    </style>
+</head>
+<body>
+    <h1>Websocket Broadcast Console</h1>
+    <p id="status" class="status-off">Connecting...</p>
+
+    <form id="message-form">
+        <input type="text" id="message-input" placeholder="Send Cargo...." required>
+        <button type="submit">Deploy message</button>
+    </form>
+
+    <h3>Live Stream Logs:</h3>
+    <pre id="log"></pre>
+
+    <script>
+        //initialize the handshake
+        const socket = new WebSocket("ws://localhost:8080");
+
+        const statusElement = document.getElementById("status");
+        const logElement = document.getElementById("log");
+        const form = document.getElementById("message-form");
+        
+        const appendLog = (label, message)=>{
+            logElement.textContent = `[${label}] ${message}\n${logElement.textContent}`;
+            logElement.scrollTop = logElement.scrollHeight;
+        };
+
+        socket.addEventListener("open",()=>{
+            statusElement.textContent = "Status: Connected";
+            statusElement.className = "status-on";
+            appendLog("Connection Status","Connected to Server");
+        })
+
+        socket.addEventListener("close",()=>{
+            statusElement.textContent = "Status: Disconnected";
+            statusElement.className = "status-off";
+            appendLog("Connection Status","Disconnected from Server");
+        })
+
+        socket.addEventListener("message",(e)=>{
+            appendLog("Server", e.data);
+        });
+
+        document.getElementById('message-form').addEventListener('submit',(e)=>{
+            e.preventDefault();
+
+            if(socket.readyState !== WebSocket.OPEN){
+                appendLog("System", "Cannot send message", socket.readyState);
+                return;
+            }
+
+            const input = document.getElementById("message-input");
+
+            if(!input.value) return;
+
+            socket.send(input.value);
+            input.value = "";
+        });
+    </script>
+</body>
+</html>
