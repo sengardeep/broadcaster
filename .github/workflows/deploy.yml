@@ -11,12 +11,13 @@ jobs:
     steps:
       - name: SSH into server
         run: |
-            echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/ssh_key
-            chmod 600 ~/ssh_key
-            mkdir -p ~/.ssh
-            ssh-keyscan -H 51.20.66.36 >> ~/.ssh/known_hosts
-            ssh -i ~/ssh_key root@51.20.66.36 
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/ssh_key
+          chmod 600 ~/ssh_key
+          mkdir -p ~/.ssh
+          ssh-keyscan -H 51.20.66.36 >> ~/.ssh/known_hosts
+          ssh -i ~/ssh_key root@51.20.66.36 '
             cd broadcaster &&
             git pull &&
             npm install &&
             pm2 restart all
+          '
