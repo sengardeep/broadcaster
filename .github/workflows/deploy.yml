@@ -1,0 +1,22 @@
+name : Deploy to Production
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  redeploy_everything:
+    name: Deploying everything to production
+    runs-on: ubuntu-latest
+    steps:
+      - name: SSH into server
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/ssh_key
+          chmod 600 ~/ssh_key
+          ssh -i ~/ssh_key root@51.20.66.36 '
+            cd broadcaster &&
+            git pull &&
+            npm install &&
+            pm2 restart all
+          '
+        
