@@ -11,7 +11,7 @@ jobs:
     steps:
       - name: SSH into server
         run: |
-            printf '%s\n' "${{ secrets.SSH_KEY }}" > ~/ssh_key
+            printf '%s\n' "${{ secrets.SSH_PRIVATE_KEY }}" > ~/ssh_key
             chmod 600 ~/ssh_key
 
             mkdir -p ~/.ssh
